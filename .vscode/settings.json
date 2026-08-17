@@ -1,0 +1,6 @@
+{
+  "python.defaultInterpreterPath": "/Users/av.kaanaydin/Desktop/Hukuk_MCP/hukuk_env/bin/python",
+  "python.analysis.extraPaths": [
+    "/Users/av.kaanaydin/Desktop/Hukuk_MCP/hukuk_env/lib/python3.14/site-packages"
+  ]
+}

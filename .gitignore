@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.venv/
+venv/
+hukuk_env/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local DB / large generated data
+hukuk_vektor_arsivi/
+
+# PDF library and local data
+pdf_kulliyati/
+
+# VS Code
+.vscode/
+
+# Environment files
+.env
+.env.*
