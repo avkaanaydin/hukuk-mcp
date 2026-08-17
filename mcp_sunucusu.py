@@ -4,11 +4,13 @@ import shutil
 import asyncio
 
 import chromadb
+from chromadb.utils.embedding_functions import ONNXMiniLM_L6_V2
 from mcp.server import MCPServer
 
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_DB = BASE_DIR / "hukuk_vektor_arsivi"
 FALLBACK_DB = Path.home() / "Library" / "Application Support" / "Hukuk_MCP" / "hukuk_vektor_arsivi"
+MODEL_CACHE = BASE_DIR / ".cache" / "chroma" / "onnx_models" / ONNXMiniLM_L6_V2.MODEL_NAME
 
 def choose_db_path():
     if PROJECT_DB.exists() and os.access(PROJECT_DB, os.W_OK):
@@ -27,6 +29,7 @@ def choose_db_path():
 
 DB_PATH = choose_db_path()
 
+ONNXMiniLM_L6_V2.DOWNLOAD_PATH = MODEL_CACHE
 chroma_client = chromadb.PersistentClient(path=str(DB_PATH))
 collection = chroma_client.get_or_create_collection(name="doktrin_kulliyati")
 
@@ -36,15 +39,26 @@ mcp = MCPServer("HukukKutuphanesi")
 async def doktrin_ara(sorgu: str) -> str:
     sonuclar = collection.query(query_texts=[sorgu], n_results=5)
 
-    if not sonuclar.get("documents") or not sonuclar["documents"][0]:
+    belgeler = sonuclar.get("documents")
+    metadatalar = sonuclar.get("metadatas")
+    if not belgeler or not belgeler[0]:
         return "Hüküm: Kütüphanede bu hususta hukuki bulguya rastlanmamıştır."
 
     mutalaa = "Kütüphaneden Bulunan Hukuki Kaynaklar:\n\n"
-    for i, dokuman in enumerate(sonuclar["documents"][0]):
-        kaynak = sonuclar["metadatas"][0][i]["kaynak"]
-        mutalaa += f"--- ESER (KAYNAK): {kaynak} ---\n{dokuman}\n\n"
+    bulunan_kaynak = False
+    for i, dokuman in enumerate(belgeler[0]):
+        metadata = metadatalar[0][i] if metadatalar and metadatalar[0] else None
+        if not dokuman or not metadata:
+            continue
 
-    return mutalaa
+        kaynak = metadata.get("kaynak", "Bilinmeyen kaynak")
+        mutalaa += f"--- ESER (KAYNAK): {kaynak} ---\n{dokuman}\n\n"
+        bulunan_kaynak = True
+
+    if bulunan_kaynak:
+        return mutalaa
+
+    return "Hüküm: Kütüphanede bu hususta hukuki bulguya rastlanmamıştır."
 
 async def main():
     await mcp.run_stdio_async()
