@@ -6,11 +6,13 @@ import asyncio
 import chromadb
 from chromadb.utils.embedding_functions import ONNXMiniLM_L6_V2
 from mcp.server import MCPServer
+from pdf_indeksleyici import index_pending_pdfs
 
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_DB = BASE_DIR / "hukuk_vektor_arsivi"
 FALLBACK_DB = Path.home() / "Library" / "Application Support" / "Hukuk_MCP" / "hukuk_vektor_arsivi"
 MODEL_CACHE = BASE_DIR / ".cache" / "chroma" / "onnx_models" / ONNXMiniLM_L6_V2.MODEL_NAME
+PDF_FOLDER = BASE_DIR / "pdf_kulliyati"
 
 def choose_db_path():
     if PROJECT_DB.exists() and os.access(PROJECT_DB, os.W_OK):
@@ -60,8 +62,18 @@ async def doktrin_ara(sorgu: str) -> str:
 
     return "Hüküm: Kütüphanede bu hususta hukuki bulguya rastlanmamıştır."
 
+async def pdf_klasorunu_izle():
+    while True:
+        await asyncio.to_thread(index_pending_pdfs, PDF_FOLDER, collection)
+        await asyncio.sleep(5)
+
 async def main():
-    await mcp.run_stdio_async()
+    izleyici = asyncio.create_task(pdf_klasorunu_izle())
+    try:
+        await mcp.run_stdio_async()
+    finally:
+        izleyici.cancel()
+        await asyncio.gather(izleyici, return_exceptions=True)
 
 if __name__ == "__main__":
     asyncio.run(main())
