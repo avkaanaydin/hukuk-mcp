@@ -17,6 +17,44 @@ PDF adı ve ilgili metin parçası birlikte gösterilir.
 - PDF değişikliklerini yaklaşık 5 saniyede algılayan arka plan izleyicisi
 - Başarısız veya metinsiz PDF'leri atlayıp sonraki taramada tekrar deneyebilme
 
+## Hızlı İndirme
+
+### Seçenek 1: Terminal ile (önerilen)
+
+Terminal'i açın ve aşağıdaki tek komutu çalıştırın. Proje doğrudan masaüstünüzde
+`hukuk-mcp` klasörüne indirilir:
+
+```bash
+cd "$HOME/Desktop" && git clone https://github.com/avkaanaydin/hukuk-mcp.git hukuk-mcp
+```
+
+İndirme tamamlanınca proje klasörüne geçin:
+
+```bash
+cd "$HOME/Desktop/hukuk-mcp"
+```
+
+> `git` komutu bulunamazsa macOS'un Komut Satırı Geliştirici Araçları'nı kurun:
+>
+> ```bash
+> xcode-select --install
+> ```
+
+### Seçenek 2: ZIP dosyası ile
+
+1. GitHub repository sayfasında **Code > Download ZIP** seçeneğine tıklayın.
+2. İndirilen ZIP dosyasını açın.
+3. Açılan `hukuk-mcp-main` klasörünü masaüstüne taşıyın ve isterseniz adını `hukuk-mcp`
+  olarak değiştirin.
+4. Terminal'de proje klasörüne geçin:
+
+```bash
+cd "$HOME/Desktop/hukuk-mcp-main"
+```
+
+ZIP sürümünde `git pull` ile güncelleme yapılamaz. Yeni sürümü GitHub'dan yeniden
+indirmek veya terminal yöntemini kullanmak gerekir.
+
 ## Nasıl Çalışır?
 
 ```text
@@ -34,11 +72,10 @@ pdf_kulliyati/  ->  pypdf  ->  metin parçaları  ->  ChromaDB  ->  MCP istemcis
 
 ## macOS Kurulumu
 
-Terminal'i açın ve aşağıdaki komutları sırayla çalıştırın:
+Hızlı indirme adımını tamamladıktan sonra proje klasöründeyken aşağıdaki komutları
+sırayla çalıştırın:
 
 ```bash
-git clone https://github.com/avkaanaydin/hukuk-mcp.git
-cd hukuk-mcp
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
